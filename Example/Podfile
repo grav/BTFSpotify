@@ -1,0 +1,10 @@
+target 'BTFSpotify', :exclusive => true do
+  pod "BTFSpotify", :path => "../"
+end
+
+target 'Tests', :exclusive => true do
+  pod "BTFSpotify", :path => "../"
+
+  pod 'Specta', '~> 0.2.1'
+  pod 'Expecta'
+end
