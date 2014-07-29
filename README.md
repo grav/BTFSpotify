@@ -12,7 +12,7 @@ It also makes the login and session management much easier.
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
-Then get a spotify API key from http://developer.spotify.com and place the appkey.c file in Example/BTFSpotify/
+Then get a spotify API key from https://devaccount.spotify.com/my-account/keys/ and place the appkey.c file in Example/BTFSpotify/
 
 ## Requirements
 
