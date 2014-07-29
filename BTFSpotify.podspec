@@ -10,27 +10,24 @@
 Pod::Spec.new do |s|
   s.name             = "BTFSpotify"
   s.version          = "0.1.0"
-  s.summary          = "A short description of BTFSpotify."
+  s.summary          = "BTFSpotify wraps the Spotify Cocoa API using Reactive Cocoa and general sanity."
   s.description      = <<-DESC
-                       An optional longer description of BTFSpotify
-
-                       * Markdown format.
-                       * Don't worry about the indent, we strip it!
+											 BTFSpotify abstracts away the asynchronous nature of the CocoaLibSpotify API using signals.
+											 It also makes the login and session management much easier.
                        DESC
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/BTFSpotify"
-  # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
+  s.homepage         = "https://github.com/grav/BTFSpotify"
   s.license          = 'MIT'
   s.author           = { "Mikkel Gravgaard" => "mikkel@klokke.dk" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/BTFSpotify.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => "https://github.com/grav/BTFSpotify.git", :tag => s.version.to_s }
+  # s.social_media_url = 'https://twitter.com/klokbaske'
 
-  s.platform     = :ios, '7.0'
+  s.platform     = :ios, '6.0'
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes'
-  s.resources = 'Pod/Assets/*.png'
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'CocoaLibSpotify', '~> 2.4.5'
+  s.dependency 'ReactiveCocoa', '~> 2.3.0'
 end

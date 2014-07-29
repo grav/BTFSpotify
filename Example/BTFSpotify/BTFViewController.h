@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class BTFSpotify;
+
 @interface BTFViewController : UIViewController
 
 @end

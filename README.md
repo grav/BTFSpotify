@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/cocoapods/l/BTFSpotify.svg?style=flat)](http://cocoadocs.org/docsets/BTFSpotify)
 [![Platform](https://img.shields.io/cocoapods/p/BTFSpotify.svg?style=flat)](http://cocoadocs.org/docsets/BTFSpotify)
 
+BTFSpotify abstracts away the asynchronous nature of the CocoaLibSpotify API using Reactive Cocoa signals.
+It also makes the login and session management much easier.
+
 ## Usage
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.

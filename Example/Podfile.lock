@@ -1,0 +1,35 @@
+PODS:
+  - BTFSpotify (0.1.0):
+    - CocoaLibSpotify (~> 2.4.5)
+    - ReactiveCocoa (~> 2.3.0)
+  - CocoaLibSpotify (2.4.5):
+    - libspotify (= 12.1.64)
+  - Expecta (0.3.1)
+  - libspotify (12.1.64)
+  - ReactiveCocoa (2.3.1):
+    - ReactiveCocoa/UI
+  - ReactiveCocoa/Core (2.3.1):
+    - ReactiveCocoa/no-arc
+  - ReactiveCocoa/no-arc (2.3.1)
+  - ReactiveCocoa/UI (2.3.1):
+    - ReactiveCocoa/Core
+  - Specta (0.2.1)
+
+DEPENDENCIES:
+  - BTFSpotify (from `../`)
+  - Expecta
+  - Specta (~> 0.2.1)
+
+EXTERNAL SOURCES:
+  BTFSpotify:
+    :path: ../
+
+SPEC CHECKSUMS:
+  BTFSpotify: c0374ba19adc98fba2b8996f3235d9254acb1423
+  CocoaLibSpotify: d5c2cc8eac1a27618c6f3ff9f656cabb5982f52a
+  Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
+  libspotify: 1f095010889816da1f68742bbe6e02fd5d09adb1
+  ReactiveCocoa: dca75777b9d18990c8714a3a6f2149f29b4d1462
+  Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
+
+COCOAPODS: 0.33.1
