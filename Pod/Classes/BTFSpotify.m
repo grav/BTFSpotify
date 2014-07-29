@@ -4,7 +4,6 @@
 //
 
 #import "CocoaLibSpotify.h"
-#include "appkey.c"
 #import "BTFSpotify.h"
 #import "ReactiveCocoa.h"
 
@@ -31,11 +30,21 @@
 @property(nonatomic) BOOL wantsPresentingViewController;
 @property (nonatomic, strong) RACSignal *session;
 
+@property(nonatomic) uint8_t const *appKey;
+@property(nonatomic) size_t appKeySize;
 @end
 
 @implementation BTFSpotify {
     BOOL _didCreateSession;
 }
+
+- (instancetype)initWithAppKey:(const uint8_t *)appkey size:(size_t)size {
+    if(!(self = [super init])) return nil;
+    self.appKey = appkey;
+    self.appKeySize = size;
+    return self;
+}
+
 
 - (SPPlaybackManager *)playbackManager {
     if(!_playbackManager && [SPSession sharedSession]){
@@ -52,8 +61,8 @@
             _didCreateSession = YES;
             NSError *error;
 
-            BOOL result = [SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:&g_appkey
-                                                                                              length:g_appkey_size]
+            BOOL result = [SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:self.appKey
+                                                                                              length:self.appKeySize]
                                                                      userAgent:@"dk.betafunk.splif"
                                                                  loadingPolicy:SPAsyncLoadingManual
                                                                          error:&error];

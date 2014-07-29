@@ -15,6 +15,8 @@
 @property(nonatomic, readonly) BOOL wantsPresentingViewController;
 @property (nonatomic, weak) UIViewController *presentingViewController;
 
+- (instancetype)initWithAppKey:(const uint8_t *)appkey size:(size_t)size;
+
 - (RACSignal *)starredPlaylist;
 
 - (RACSignal *)playlistWithName:(NSString *)name;

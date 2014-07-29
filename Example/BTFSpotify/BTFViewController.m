@@ -10,7 +10,7 @@
 #import "BTFSpotify.h"
 #import "ReactiveCocoa.h"
 #import "SPPlaylist.h"
-
+#include "appkey.c"
 static NSString *const kReuseId = @"reuseid";
 
 @interface BTFViewController () <UITableViewDataSource>
@@ -23,7 +23,9 @@ static NSString *const kReuseId = @"reuseid";
 - (instancetype)init {
     if (!(self = [super init])) return nil;
 
-    self.btfSpotify = [BTFSpotify new];
+
+
+    self.btfSpotify = [[BTFSpotify alloc] initWithAppKey:g_appkey size:g_appkey_size];
 
     RAC(self,playlists) = self.btfSpotify.allPlaylists;
 
