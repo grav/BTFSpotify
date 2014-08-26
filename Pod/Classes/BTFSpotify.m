@@ -151,6 +151,7 @@
                 [subscriber sendError:error];
             } else {
                 [subscriber sendNext:@YES];
+                [subscriber sendCompleted];
             }
         }];
         return nil;
@@ -163,6 +164,7 @@
         return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
             [container createPlaylistWithName:playlistName callback:^(SPPlaylist *createdPlaylist) {
                 [subscriber sendNext:createdPlaylist];
+                [subscriber sendCompleted];
             }];
             return nil;
         }];
@@ -197,9 +199,11 @@
         [SPAsyncLoading waitUntilLoaded:thing timeout:kSPAsyncLoadingDefaultTimeout
                                    then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
                                        if(loadedItems.count==1){
-                                            [subscriber sendNext:loadedItems.firstObject];
+                                           [subscriber sendNext:loadedItems.firstObject];
+                                           [subscriber sendCompleted];
                                        } else if(loadedItems.count>1){
                                            [subscriber sendNext:loadedItems];
+                                           [subscriber sendCompleted];
                                        } else {
                                            NSCAssert(notLoadedItems.count>0,@"");
                                            NSString *string = [NSString stringWithFormat:@"Could not load %@",thing];
