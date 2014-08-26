@@ -163,6 +163,7 @@
     return [[self playlistContainer] flattenMap:^RACStream *(SPPlaylistContainer *container) {
         return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
             [container createPlaylistWithName:playlistName callback:^(SPPlaylist *createdPlaylist) {
+                // TODO - createdPlaylist doesn't seem to be a valid playlist object
                 [subscriber sendNext:createdPlaylist];
                 [subscriber sendCompleted];
             }];
