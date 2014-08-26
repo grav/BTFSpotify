@@ -126,10 +126,19 @@
 }
 
 - (RACSignal *)playlistWithName:(NSString *)name{
-    return [[self allPlaylists] map:^id(NSArray *playlists) {
+    return [[[self allPlaylists] map:^id(NSArray *playlists) {
         return [playlists findFirst:^BOOL(SPPlaylist *playlist) {
             return [playlist.name isEqualToString:name];
         }];
+    }] flattenMap:^RACStream *(id value) {
+        if(value){
+            return [RACSignal return:value];
+        } else {
+            NSString *error = [NSString stringWithFormat:@"Could not find playlist named '%@'",name];
+            return [RACSignal error:[NSError errorWithDomain:@"btf.spotify"
+                                                        code:-1
+                                                    userInfo:@{NSLocalizedDescriptionKey:error}]];
+        }
     }];
 
 }
