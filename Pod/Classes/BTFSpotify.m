@@ -25,7 +25,7 @@
 
 @end
 
-@interface BTFSpotify () <SPSessionDelegate>
+@interface BTFSpotify () <SPSessionDelegate, SPLoginViewControllerDelegate>
 @property (nonatomic, strong) SPPlaybackManager *playbackManager;
 @property(nonatomic) BOOL wantsPresentingViewController;
 @property (nonatomic, strong) RACSignal *session;
@@ -85,8 +85,9 @@
             } else {
                 // TODO - handle case where user cancels - we'll never complete then!
                 self.wantsPresentingViewController = YES;
+                SPLoginViewController *loginVC = [SPLoginViewController loginControllerForSession:session];
+                loginVC.loginDelegate = self;
                 [[[RACObserve(self, presentingViewController) ignore:nil] delay:1] subscribeNext:^(UIViewController *presentingVC) {
-                    UIViewController *loginVC = [SPLoginViewController loginControllerForSession:session];
                     [presentingVC presentViewController:loginVC animated:YES completion:nil];
                 }];
             }
@@ -97,7 +98,14 @@
                 return [RACSignal error:tuple.second];
             }];
 
-            [[RACSignal merge:@[didSucceed, didFail]] subscribeNext:^(id x) {
+            RACSignal *didFail2 = [[self rac_signalForSelector:@selector(loginViewController:didCompleteSuccessfully:)] flattenMap:^RACStream *(RACTuple *tuple) {
+                BOOL didSucceedLogin = [tuple.second boolValue];
+                return didSucceedLogin ? nil : [RACSignal error:[NSError errorWithDomain:@"btf.spotify"
+                                                                        code:-1
+                                                                    userInfo:@{NSLocalizedDescriptionKey:@"User cancelled"}]];
+            }];
+
+            [[RACSignal merge:@[didSucceed, didFail,didFail2]] subscribeNext:^(id x) {
                 [subscriber sendNext:x];
             }];
             return nil;
@@ -107,6 +115,11 @@
     }
     return _session;
 }
+
+- (void)loginViewController:(SPLoginViewController *)controller didCompleteSuccessfully:(BOOL)didLogin {
+
+}
+
 
 - (void)session:(SPSession *)aSession didFailToLoginWithError:(NSError *)error {
     NSLog(@"session failed login: %@",error);
