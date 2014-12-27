@@ -13,7 +13,7 @@
 #include "appkey.c"
 static NSString *const kReuseId = @"reuseid";
 
-@interface BTFViewController () <UITableViewDataSource>
+@interface BTFViewController () <UITableViewDataSource,UIAlertViewDelegate>
 @property (nonatomic, strong) NSArray *playlists;
 @property(nonatomic, strong) BTFSpotify *btfSpotify;
 @end
@@ -26,16 +26,26 @@ static NSString *const kReuseId = @"reuseid";
 
 
     self.btfSpotify = [[BTFSpotify alloc] initWithAppKey:g_appkey size:g_appkey_size];
-
-    RAC(self,playlists) = [self.btfSpotify.allPlaylists catch:^RACSignal *(NSError *error) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alertView show];
-        return [RACSignal empty];
-    }];
+    [self racUpPlaylists];
 
     return self;
 }
 
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if(buttonIndex==1){
+        [self racUpPlaylists];
+    }
+}
+
+- (void)racUpPlaylists
+{
+
+    RAC(self,playlists) = [self.btfSpotify.allPlaylists catch:^RACSignal *(NSError *error) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:self cancelButtonTitle:@"I give up!" otherButtonTitles:@"Try again!",nil];
+        [alertView show];
+        return [RACSignal empty];
+    }];
+}
 
 - (void)viewDidLoad
 {
