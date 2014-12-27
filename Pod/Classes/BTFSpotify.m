@@ -105,9 +105,9 @@
                                                                     userInfo:@{NSLocalizedDescriptionKey:@"User cancelled"}]];
             }];
 
-            [[RACSignal merge:@[didSucceed, didFail,didFail2]] subscribeNext:^(id x) {
-                [subscriber sendNext:x];
-            }];
+            RACSignal *returnSignals = [RACSignal merge:@[didSucceed, didFail,didFail2]];
+            [returnSignals subscribe:subscriber];
+
             return nil;
         }] replayLazily];
 
