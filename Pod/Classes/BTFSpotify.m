@@ -6,7 +6,7 @@
 #import "CocoaLibSpotify.h"
 #import "BTFSpotify.h"
 #import "ReactiveCocoa.h"
-
+#import "RACEXTScope.h"
 @interface NSArray (Utils)
 - (id)findFirst:(BOOL(^)(id x))b;
 @end
@@ -35,7 +35,6 @@
 @end
 
 @implementation BTFSpotify {
-    BOOL _didCreateSession;
 }
 
 - (instancetype)initWithAppKey:(const uint8_t *)appkey size:(size_t)size {
@@ -56,22 +55,22 @@
 
 - (RACSignal *)session{
     if(!_session){
-        _session = [[RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
-            NSCAssert(!_didCreateSession, @"already tried creating session");
-            _didCreateSession = YES;
+        _session = [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
             NSError *error;
 
-            BOOL result = [SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:self.appKey
-                                                                                              length:self.appKeySize]
-                                                                     userAgent:@"dk.betafunk.splif"
-                                                                 loadingPolicy:SPAsyncLoadingManual
-                                                                         error:&error];
-            NSCAssert(result, @"");
-            // TODO - might want to handle error nicer here
+            if(![SPSession sharedSession]){
+                BOOL result = [SPSession initializeSharedSessionWithApplicationKey:[NSData dataWithBytes:self.appKey
+                                                                                                  length:self.appKeySize]
+                                                                         userAgent:@"dk.betafunk.splif"
+                                                                     loadingPolicy:SPAsyncLoadingManual
+                                                                             error:&error];
+                NSCAssert(result, @"");
+                // TODO - might want to handle error nicer here
 
+            }
 
-            NSLog(@"Logging in...");
             SPSession *session = [SPSession sharedSession];
+            NSCAssert(session, @"");
             session.delegate = self;
 
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -79,37 +78,45 @@
             id key = [[storedCredentials allKeys] firstObject];
 
             // TODO - handle case where storedCredentials is too old!
-            if (key) {
-                NSString *pw = storedCredentials[key];
-                [session attemptLoginWithUserName:key existingCredential:pw];
+
+            if(session.connectionState == SP_CONNECTION_STATE_LOGGED_IN){
+                NSLog(@"Already logged in");
+                [subscriber sendNext:session];
             } else {
-                // TODO - handle case where user cancels - we'll never complete then!
-                self.wantsPresentingViewController = YES;
-                SPLoginViewController *loginVC = [SPLoginViewController loginControllerForSession:session];
-                loginVC.loginDelegate = self;
-                [[[RACObserve(self, presentingViewController) ignore:nil] delay:1] subscribeNext:^(UIViewController *presentingVC) {
-                    [presentingVC presentViewController:loginVC animated:YES completion:nil];
+                NSLog(@"Logging in...");
+                if (key) {
+                    NSString *pw = storedCredentials[key];
+                    [session attemptLoginWithUserName:key existingCredential:pw];
+                } else {
+                    // TODO - handle case where user cancels - we'll never complete then!
+                    self.wantsPresentingViewController = YES;
+                    SPLoginViewController *loginVC = [SPLoginViewController loginControllerForSession:session];
+                    loginVC.loginDelegate = self;
+                    [[[RACObserve(self, presentingViewController) ignore:nil] delay:1] subscribeNext:^(UIViewController *presentingVC) {
+                        [presentingVC presentViewController:loginVC animated:YES completion:nil];
+                    }];
+                }
+                RACSignal *didSucceed = [[self rac_signalForSelector:@selector(sessionDidLoginSuccessfully:)] flattenMap:^RACStream *(RACTuple *tuple) {
+                    return [self load:tuple.first];
                 }];
+                RACSignal *didFail = [[self rac_signalForSelector:@selector(session:didFailToLoginWithError:)] flattenMap:^RACStream *(RACTuple *tuple) {
+                    return [RACSignal error:tuple.second];
+                }];
+
+                RACSignal *didFail2 = [[self rac_signalForSelector:@selector(loginViewController:didCompleteSuccessfully:)] flattenMap:^RACStream *(RACTuple *tuple) {
+                    BOOL didSucceedLogin = [tuple.second boolValue];
+                    return didSucceedLogin ? nil : [RACSignal error:[NSError errorWithDomain:@"btf.spotify"
+                                                                                        code:-1
+                                                                                    userInfo:@{NSLocalizedDescriptionKey:@"User cancelled"}]];
+                }];
+
+                RACSignal *returnSignals = [RACSignal merge:@[didSucceed, didFail, didFail2]];
+                [returnSignals subscribe:subscriber];
             }
-            RACSignal *didSucceed = [[self rac_signalForSelector:@selector(sessionDidLoginSuccessfully:)] flattenMap:^RACStream *(RACTuple *tuple) {
-                return [self load:tuple.first];
-            }];
-            RACSignal *didFail = [[self rac_signalForSelector:@selector(session:didFailToLoginWithError:)] flattenMap:^RACStream *(RACTuple *tuple) {
-                return [RACSignal error:tuple.second];
-            }];
 
-            RACSignal *didFail2 = [[self rac_signalForSelector:@selector(loginViewController:didCompleteSuccessfully:)] flattenMap:^RACStream *(RACTuple *tuple) {
-                BOOL didSucceedLogin = [tuple.second boolValue];
-                return didSucceedLogin ? nil : [RACSignal error:[NSError errorWithDomain:@"btf.spotify"
-                                                                        code:-1
-                                                                    userInfo:@{NSLocalizedDescriptionKey:@"User cancelled"}]];
-            }];
-
-            RACSignal *returnSignals = [RACSignal merge:@[didSucceed, didFail,didFail2]];
-            [returnSignals subscribe:subscriber];
 
             return nil;
-        }] replayLazily];
+        }];
 
 
     }
