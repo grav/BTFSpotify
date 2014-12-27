@@ -27,7 +27,11 @@ static NSString *const kReuseId = @"reuseid";
 
     self.btfSpotify = [[BTFSpotify alloc] initWithAppKey:g_appkey size:g_appkey_size];
 
-    RAC(self,playlists) = self.btfSpotify.allPlaylists;
+    RAC(self,playlists) = [self.btfSpotify.allPlaylists catch:^RACSignal *(NSError *error) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alertView show];
+        return [RACSignal empty];
+    }];
 
     return self;
 }
