@@ -9,10 +9,10 @@
 
 Pod::Spec.new do |s|
   s.name             = "BTFSpotify"
-  s.version          = "0.2.0"
+  s.version          = "0.2.1"
   s.summary          = "BTFSpotify wraps the Spotify Cocoa API using Reactive Cocoa and general sanity."
   s.description      = <<-DESC
-											 BTFSpotify abstracts away the asynchronous nature of the CocoaLibSpotify API using signals.
+											 BTFSpotify abstracts away the asynchronous nature of the CocoaLibSpotify API using Reactive Cocoa signals.
 											 It also makes the login and session management much easier.
                        DESC
   s.homepage         = "https://github.com/grav/BTFSpotify"
