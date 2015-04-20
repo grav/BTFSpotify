@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "BTFSpotify"
-  s.version          = "0.2.1"
+  s.version          = "0.2.2"
   s.summary          = "BTFSpotify wraps the Spotify Cocoa API using Reactive Cocoa and general sanity."
   s.description      = <<-DESC
 											 BTFSpotify abstracts away the asynchronous nature of the CocoaLibSpotify API using Reactive Cocoa signals.
@@ -29,5 +29,5 @@ Pod::Spec.new do |s|
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'CocoaLibSpotify', '~> 2.4.5'
-  s.dependency 'ReactiveCocoa', '~> 2.3.0'
+  s.dependency 'ReactiveCocoa', '~> 2.3'
 end
